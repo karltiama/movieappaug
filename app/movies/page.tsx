@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchMovies, addToWatchlist } from "./actions"; // Import server-side functions
 import { Star, Plus } from "lucide-react";
+import Link from "next/link"; // Import the Link component
 
 interface Movie {
 	id: number;
@@ -47,18 +48,22 @@ export default function MovieSearch({
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-start">
 				{movies.map((movie) => (
 					<div key={movie.id} className="grid gap-2 relative">
-						<img
-							src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-							alt={`${movie.title} Poster`}
-							width={300}
-							height={450}
-							className="rounded-lg object-cover aspect-[2/3]"
-						/>
+						<Link href={`/movies/${movie.id}`}>
+							<img
+								src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+								alt={`${movie.title} Poster`}
+								width={300}
+								height={450}
+								className="rounded-lg object-cover aspect-[2/3]"
+							/>
+						</Link>
 						<div className="grid gap-1">
-							<h3 className="font-semibold text-lg">{movie.title}</h3>
-							<p className="text-muted-foreground text-sm line-clamp-2">
-								{movie.overview}
-							</p>
+							<Link href={`/movies/${movie.id}`}>
+								<h3 className="font-semibold text-lg">{movie.title}</h3>
+								<p className="text-muted-foreground text-sm line-clamp-2">
+									{movie.overview}
+								</p>
+							</Link>
 						</div>
 						<div className="absolute top-4 right-4 flex space-x-2">
 							<button
