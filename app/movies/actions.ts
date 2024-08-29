@@ -19,12 +19,30 @@ export async function fetchMovies(query: string) {
 }
 
 // Adds a movie to the user's watchlist
-export async function addToWatchlist(movieId: number, userId: string) {
+export async function addToWatchlist(
+	movieId: number,
+	movieTitle: string,
+	posterPath: string
+) {
 	const supabase = createClient();
 
-	const { data, error } = await supabase
-		.from("user_movie_list")
-		.insert({ user_id: userId, movie_id: movieId });
+	// Fetch the current user from the Supabase server-side client
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	if (!user) {
+		throw new Error("User not authenticated");
+	}
+
+	const { data, error } = await supabase.from("user_movie_list").insert({
+		user_id: user.id,
+		movie_id: movieId,
+		movie_title: movieTitle,
+		poster_path: posterPath,
+		status: "watchlist",
+		created_at: new Date(),
+	});
 
 	if (error) {
 		throw new Error(error.message);
@@ -62,4 +80,20 @@ export async function fetchMovieDetails(movieId: string) {
 	};
 
 	return movieDetails;
+}
+
+// Fetches the user's watchlist
+export async function fetchUserWatchlist(userId: string) {
+	const supabase = createClient();
+
+	const { data, error } = await supabase
+		.from("user_movie_list")
+		.select("movie_id, movie_title, poster_path, status")
+		.eq("user_id", userId);
+
+	if (error) {
+		throw new Error(error.message);
+	}
+
+	return data;
 }
