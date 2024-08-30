@@ -1,6 +1,9 @@
 import { fetchUserWatchlist } from "../movies/actions"; // Adjust the import path as necessary
 import { createClient } from "@/utils/supabase/server";
 import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import { Star } from "lucide-react";
+import SearchMovies from "@/components/SearchMovies";
 
 // Server-side function to fetch the user's ID
 async function getUserId() {
@@ -19,12 +22,17 @@ export default async function WatchlistPage() {
 	const watchlist = await fetchUserWatchlist(userId); // Fetch the user's watchlist
 
 	return (
-		<div className="max-w-4xl mx-auto px-4 py-12">
-			<h1 className="text-2xl font-bold mb-6">Your Watchlist</h1>
+		<div className="grid gap-6 max-w-3xl mx-auto px-4 py-12">
+			<SearchMovies />
+			<div className="flex flex-col items-center">
+				<h2 className="text-2xl font-bold">My Watchlist</h2>
+			</div>
 			{watchlist.length > 0 ? (
-				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-start">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{watchlist.map((movie) => (
-						<div key={movie.movie_id} className="grid gap-2">
+						<Card
+							key={movie.movie_id}
+							className="w-full rounded-lg overflow-hidden shadow-lg flex flex-row">
 							<Image
 								src={
 									movie.poster_path
@@ -32,14 +40,26 @@ export default async function WatchlistPage() {
 										: "/placeholder.svg"
 								}
 								alt={`${movie.movie_title} Poster`}
-								width={300}
-								height={450}
-								className="rounded-lg object-cover aspect-[2/3]"
+								width={200}
+								height={300}
+								className="object-cover w-1/2 aspect-[2/3]"
 							/>
-							<div className="grid gap-1">
-								<h3 className="font-semibold text-lg">{movie.movie_title}</h3>
-							</div>
-						</div>
+							<CardContent className="p-6 flex flex-col gap-4 w-1/2">
+								<h3 className="text-xl font-bold">{movie.movie_title}</h3>
+								{/* <p className="text-muted-foreground text-base line-clamp-3">
+									{movie.overview || "No overview available."}
+								</p> */}
+								<div className="flex items-center gap-2 mt-auto">
+									{/* Assuming you have a rating system */}
+									<Star className="w-5 h-5 fill-primary" />
+									<Star className="w-5 h-5 fill-primary" />
+									<Star className="w-5 h-5 fill-primary" />
+									<Star className="w-5 h-5 fill-primary" />
+									<Star className="w-5 h-5 fill-muted stroke-muted-foreground" />
+									<span className="text-sm text-muted-foreground">4.5</span>
+								</div>
+							</CardContent>
+						</Card>
 					))}
 				</div>
 			) : (

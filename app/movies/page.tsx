@@ -50,7 +50,9 @@ export default function MovieSearch({
 			{movies.length > 0 ? (
 				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-start">
 					{movies.map((movie) => (
-						<div key={movie.id} className="grid gap-2 relative">
+						<div
+							key={movie.id}
+							className="grid gap-2 relative transform transition-transform duration-300 hover:scale-105 hover:z-10">
 							<Link href={`/movies/${movie.id}`}>
 								<img
 									src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
