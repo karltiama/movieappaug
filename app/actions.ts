@@ -43,3 +43,32 @@ export async function fetchPopularActors() {
 	const data = await response.json();
 	return data.results; // Return the list of popular actors
 }
+
+// Adds a movie to the user's watchlist
+export async function addToWatchlist(
+	movieId: number,
+	title: string,
+	posterPath: string
+) {
+	const supabase = createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	if (!user) {
+		throw new Error("User not authenticated");
+	}
+
+	const { data, error } = await supabase.from("user_movie_list").insert({
+		user_id: user.id,
+		movie_id: movieId,
+		movie_title: title,
+		poster_path: posterPath,
+	});
+
+	if (error) {
+		throw new Error(error.message);
+	}
+
+	return data;
+}

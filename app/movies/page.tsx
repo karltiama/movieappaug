@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { fetchMovies, addToWatchlist } from "./actions"; // Import server-side functions
-import { Star, Plus } from "lucide-react";
-import Link from "next/link";
+import MovieCard from "@/components/MovieCard"; // Import the MovieCard component
 import SearchMovies from "@/components/SearchMovies";
 
 interface Movie {
@@ -11,6 +10,7 @@ interface Movie {
 	title: string;
 	overview: string;
 	poster_path: string;
+	vote_average: number; // Include vote_average
 }
 
 export default function MovieSearch({
@@ -35,60 +35,46 @@ export default function MovieSearch({
 		getMovies();
 	}, [searchParams.query]);
 
-	const handleAddToWatchlist = async (movie: Movie) => {
+	const handleAddToWatchlist = async (movieId: number) => {
 		try {
-			await addToWatchlist(movie.id, movie.title, movie.poster_path); // Add movie to watchlist
-			alert("Movie added to watchlist!");
+			const movie = movies.find((m) => m.id === movieId);
+			if (movie) {
+				await addToWatchlist(movie.id, movie.title, movie.poster_path); // Add movie to watchlist
+				alert("Movie added to watchlist!");
+			}
 		} catch (error) {
 			console.error("Error adding to watchlist:", error);
 		}
 	};
 
 	return (
-		<div className="grid gap-8 max-w-4xl mx-auto px-4 py-12">
-			<SearchMovies /> {/* Search Component */}
-			{movies.length > 0 ? (
-				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-start">
-					{movies.map((movie) => (
-						<div
-							key={movie.id}
-							className="grid gap-2 relative transform transition-transform duration-300 hover:scale-105 hover:z-10">
-							<Link href={`/movies/${movie.id}`}>
-								<img
-									src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-									alt={`${movie.title} Poster`}
-									width={300}
-									height={450}
-									className="rounded-lg object-cover aspect-[2/3]"
-								/>
-							</Link>
-							<div className="grid gap-1">
-								<Link href={`/movies/${movie.id}`}>
-									<h3 className="font-semibold text-lg">{movie.title}</h3>
-									<p className="text-muted-foreground text-sm line-clamp-2">
-										{movie.overview}
-									</p>
-								</Link>
-							</div>
-							<div className="absolute top-4 right-4 flex space-x-2">
-								<button
-									title="Rate"
-									className="bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition">
-									<Star className="w-5 h-5" />
-								</button>
-								<button
-									onClick={() => handleAddToWatchlist(movie)}
-									title="Add to Watchlist"
-									className="bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition">
-									<Plus className="w-5 h-5" />
-								</button>
-							</div>
-						</div>
-					))}
+		<section className="w-full py-12 md:py-24 lg:py-32">
+			<div className="container space-y-12 px-4 md:px-6">
+				<div className="flex flex-col items-center justify-center space-y-4 text-center">
+					<div className="space-y-2">
+						<h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+							Your Search Results
+						</h2>
+						<p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+							Explore the movies matching your search query.
+						</p>
+					</div>
 				</div>
-			) : (
-				<p>No movies found.</p>
-			)}
-		</div>
+				<SearchMovies /> {/* Search Component */}
+				{movies.length > 0 ? (
+					<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+						{movies.map((movie) => (
+							<MovieCard
+								key={movie.id}
+								movie={movie}
+								onAddToWatchlist={() => handleAddToWatchlist(movie.id)} // Pass the function
+							/>
+						))}
+					</div>
+				) : (
+					<p>No movies found.</p>
+				)}
+			</div>
+		</section>
 	);
 }

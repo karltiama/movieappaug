@@ -12,9 +12,10 @@ interface MovieCardProps {
 		poster_path: string;
 		vote_average: number;
 	};
+	onAddToWatchlist?: () => void; // Optional prop
 }
 
-const MovieCard = ({ movie }: MovieCardProps) => {
+const MovieCard = ({ movie, onAddToWatchlist }: MovieCardProps) => {
 	return (
 		<Card
 			key={movie.id}
@@ -26,10 +27,12 @@ const MovieCard = ({ movie }: MovieCardProps) => {
 				<span className="sr-only">View Movie</span>
 			</Link>
 			<div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-				<Button variant="ghost" size="icon">
-					<Plus className="h-4 w-4" />
-					<span className="sr-only">Add to Watchlist</span>
-				</Button>
+				{onAddToWatchlist && (
+					<Button variant="ghost" size="icon" onClick={onAddToWatchlist}>
+						<Plus className="h-4 w-4" />
+						<span className="sr-only">Add to Watchlist</span>
+					</Button>
+				)}
 				<Button variant="ghost" size="icon">
 					<Star className="h-4 w-4" />
 					<span className="sr-only">Add to Favorites</span>

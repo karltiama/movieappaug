@@ -5,6 +5,7 @@ import {
 	fetchTrendingMovies,
 	fetchTopRatedMovies,
 	fetchPopularActors,
+	addToWatchlist, // Import the addToWatchlist function
 } from "./actions"; // Adjust the path if needed
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import MovieCard from "@/components/MovieCard"; // Import the MovieCard component
@@ -64,6 +65,19 @@ export default function HomePage() {
 		getPopularActors();
 	}, []);
 
+	const handleAddToWatchlist = async (
+		movieId: number,
+		title: string,
+		posterPath: string
+	) => {
+		try {
+			await addToWatchlist(movieId, title, posterPath); // Call the server-side function
+			alert("Movie added to watchlist!");
+		} catch (error) {
+			console.error("Error adding to watchlist:", error);
+		}
+	};
+
 	return (
 		<section className="w-full py-12 md:py-24 lg:py-32">
 			<div className="container space-y-12 px-4 md:px-6">
@@ -88,14 +102,34 @@ export default function HomePage() {
 					<TabsContent value="trending">
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 							{trendingMovies.map((movie) => (
-								<MovieCard key={movie.id} movie={movie} />
+								<MovieCard
+									key={movie.id}
+									movie={movie}
+									onAddToWatchlist={() =>
+										handleAddToWatchlist(
+											movie.id,
+											movie.title,
+											movie.poster_path
+										)
+									}
+								/>
 							))}
 						</div>
 					</TabsContent>
 					<TabsContent value="top-rated">
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 							{topRatedMovies.map((movie) => (
-								<MovieCard key={movie.id} movie={movie} />
+								<MovieCard
+									key={movie.id}
+									movie={movie}
+									onAddToWatchlist={() =>
+										handleAddToWatchlist(
+											movie.id,
+											movie.title,
+											movie.poster_path
+										)
+									}
+								/>
 							))}
 						</div>
 					</TabsContent>
