@@ -7,10 +7,8 @@ import {
 	fetchPopularActors,
 } from "./actions"; // Adjust the path if needed
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Plus, Star } from "lucide-react";
+import MovieCard from "@/components/MovieCard"; // Import the MovieCard component
+import ActorCard from "@/components/ActorCard"; // Import the ActorCard component
 import SearchMovies from "@/components/SearchMovies";
 
 interface Movie {
@@ -66,77 +64,6 @@ export default function HomePage() {
 		getPopularActors();
 	}, []);
 
-	const renderMovieCard = (movie: Movie) => (
-		<Card
-			key={movie.id}
-			className="relative overflow-hidden rounded-lg shadow-lg transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-			<Link
-				href={`/movies/${movie.id}`}
-				className="absolute inset-0 z-10"
-				prefetch={false}>
-				<span className="sr-only">View Movie</span>
-			</Link>
-			<div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-				<Button variant="ghost" size="icon">
-					<Plus className="h-4 w-4" />
-					<span className="sr-only">Add to Watchlist</span>
-				</Button>
-				<Button variant="ghost" size="icon">
-					<Star className="h-4 w-4" />
-					<span className="sr-only">Add to Favorites</span>
-				</Button>
-			</div>
-			<div className="relative">
-				<img
-					src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-					alt={`${movie.title} Poster`}
-					className="object-cover w-full h-64"
-					style={{ aspectRatio: "2/3", objectFit: "cover" }}
-				/>
-				<div className="absolute top-4 left-4 z-20 flex items-center justify-center bg-primary text-primary-foreground rounded-full w-12 h-12">
-					<span className="text-sm font-bold">
-						{movie.vote_average.toFixed(1)}
-					</span>
-				</div>
-			</div>
-			<CardContent className="p-4 bg-background">
-				<h3 className="text-xl font-bold">{movie.title}</h3>
-				<p className="text-sm text-muted-foreground line-clamp-2">
-					{movie.overview}
-				</p>
-			</CardContent>
-		</Card>
-	);
-
-	const renderActorCard = (actor: Actor) => (
-		<Card
-			key={actor.id}
-			className="relative overflow-hidden rounded-lg shadow-lg transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-			<Link href="#" className="absolute inset-0 z-10" prefetch={false}>
-				<span className="sr-only">View Actor</span>
-			</Link>
-			<div className="relative">
-				<img
-					src={`https://image.tmdb.org/t/p/w500${actor.profile_path}`}
-					alt={`${actor.name} Portrait`}
-					className="object-cover w-full h-64"
-					style={{ aspectRatio: "2/3", objectFit: "cover" }}
-				/>
-				<div className="absolute top-4 left-4 z-20 flex items-center justify-center bg-primary text-primary-foreground rounded-full w-12 h-12">
-					<span className="text-sm font-bold">
-						{actor.popularity.toFixed(1)}
-					</span>
-				</div>
-			</div>
-			<CardContent className="p-4 bg-background">
-				<h3 className="text-xl font-bold">{actor.name}</h3>
-				<p className="text-sm text-muted-foreground">
-					Actor description goes here.
-				</p>
-			</CardContent>
-		</Card>
-	);
-
 	return (
 		<section className="w-full py-12 md:py-24 lg:py-32">
 			<div className="container space-y-12 px-4 md:px-6">
@@ -159,18 +86,24 @@ export default function HomePage() {
 						<TabsTrigger value="popular-actors">Popular Actors</TabsTrigger>
 					</TabsList>
 					<TabsContent value="trending">
-						<div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-3">
-							{trendingMovies.map(renderMovieCard)}
+						<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+							{trendingMovies.map((movie) => (
+								<MovieCard key={movie.id} movie={movie} />
+							))}
 						</div>
 					</TabsContent>
 					<TabsContent value="top-rated">
-						<div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-3">
-							{topRatedMovies.map(renderMovieCard)}
+						<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+							{topRatedMovies.map((movie) => (
+								<MovieCard key={movie.id} movie={movie} />
+							))}
 						</div>
 					</TabsContent>
 					<TabsContent value="popular-actors">
-						<div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-3">
-							{popularActors.map(renderActorCard)}
+						<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+							{popularActors.map((actor) => (
+								<ActorCard key={actor.id} actor={actor} />
+							))}
 						</div>
 					</TabsContent>
 				</Tabs>
