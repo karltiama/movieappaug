@@ -46,24 +46,41 @@ export async function fetchPopularActors() {
 
 // Adds a movie to the user's watchlist
 export async function addToWatchlist(
+	userId: string,
 	movieId: number,
-	title: string,
+	movieTitle: string,
 	posterPath: string
 ) {
 	const supabase = createClient();
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
 
-	if (!user) {
-		throw new Error("User not authenticated");
+	// Check if the movie is already in the user's watchlist
+	const { data: existingMovie, error: checkError } = await supabase
+		.from("user_movie_list")
+		.select("id")
+		.eq("user_id", userId)
+		.eq("movie_id", movieId)
+		.single();
+
+	if (checkError && checkError.code !== "PGRST116") {
+		// Handle any unexpected error, ignore if the error is "No matching rows found" (code PGRST116)
+		throw new Error(checkError.message);
 	}
 
+	if (existingMovie) {
+		// If the movie already exists, return a specific error
+		const error = new Error("Movie is already in the watchlist");
+		error.name = "MovieAlreadyExists";
+		throw error;
+	}
+
+	// Add the movie to the user's watchlist if it's not already there
 	const { data, error } = await supabase.from("user_movie_list").insert({
-		user_id: user.id,
+		user_id: userId,
 		movie_id: movieId,
-		movie_title: title,
+		movie_title: movieTitle,
 		poster_path: posterPath,
+		status: "watchlist",
+		created_at: new Date(),
 	});
 
 	if (error) {
